@@ -13,12 +13,6 @@
 <!-- Bootstrap Core CSS -->
 <link href="../css/bootstrap.min.css" rel="stylesheet">
 
-<link href="../css/style.css" rel="stylesheet">
-
-<!-- Custom Fonts -->
-<link href="../css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <!--<script src="../js/jquery-1.11.0.js"></script>-->
 
@@ -28,9 +22,6 @@
 <script type="text/javascript" src="../js/jquery.tokeninput_2.js"></script>
 <link rel="stylesheet" type="text/css" href="../css/token-input.css" />
 <link rel="stylesheet" type="text/css" href="../css/token-input-facebook.css" />
-<script type="text/javascript" src="../js/noty/packaged/jquery.noty.packaged.min.js"></script>
-<script type="text/javascript" src="../tinymce/tinymce.min.js"></script>
-<script src="../js/main.js"></script>
 </head>
 
 <body>

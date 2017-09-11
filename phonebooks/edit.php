@@ -53,7 +53,7 @@ $phonebook->get_item();
         var id = $('#id').val();
         var name = $('#name').val();
         var number = $('#number').val();
-        var isactive = $('#chkActive').val();
+        var isactive = $('#chkActive').is(':checked')?1:0;
         $.ajax({
                 url: "../phonebooks/ajax_phonebooks.php",
                 type: "POST",
@@ -62,9 +62,9 @@ $phonebook->get_item();
                 {
                     if(data == "1"){
                         $('#errors').html('data updated successfully.');
-                        //$('#form1').clear();
-                    }else if(data == "0")
-                    {
+                    }else if(data == "2"){
+                        $('#errors').html('The name or number already exist!');
+                    }else if(data == "0"){
                         $('#errors').html('error in data, please try again!');
                     }
                 }
@@ -73,7 +73,7 @@ $phonebook->get_item();
         return true;
     }
 </script>
-<h2></h2>
+<h2>Edit item</h2>
 <form id="form1" name="form1" action="" method="post">
 <table>
     <div id="errors" name="errors" class="error"></div>

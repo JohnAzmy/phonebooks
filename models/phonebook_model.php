@@ -80,8 +80,18 @@ class Phonebook_Model{
                 SET
                     name=:name, number=:number, isactive=:isactive, adddate=:adddate";
  
+        // ** check if exist
+        $phonebook_class = new Phonebook_Model($this->conn);
+        $num_name_exist = $phonebook_class->is_exist($this->name,"");    // is name exist
+        $num_number_exist = $phonebook_class->is_exist("", $this->number);  // is number exist
+        if($num_name_exist >0 || $num_number_exist>0)
+        {
+            return 2;  //name or number already exist!
+        }
+        //******
+        
         $stmt = $this->conn->prepare($query);
-
+        
         // posted values
         $this->name=htmlspecialchars(strip_tags($this->name));
         $this->number=htmlspecialchars(strip_tags($this->number));
@@ -95,9 +105,9 @@ class Phonebook_Model{
         $stmt->bindParam(":adddate", $this->adddate);
  
         if($stmt->execute()){
-            return true;
+            return 1;
         }else{
-            return false;
+            return 0;
         }
  
     }
@@ -115,6 +125,16 @@ class Phonebook_Model{
  
         $stmt = $this->conn->prepare($query);
  
+        // ** check if exist
+        $phonebook_class = new Phonebook_Model($this->conn);
+        $num_name_exist = $phonebook_class->is_exist($this->name,"",$this->id);    // is name exist
+        $num_number_exist = $phonebook_class->is_exist("", $this->number, $this->id);  // is number exist
+        if($num_name_exist >0 || $num_number_exist>0)
+        {
+            return 2;  //name or number already exist!
+        }
+        //******
+        
         // posted values
         $this->id=htmlspecialchars(strip_tags($this->id));
         $this->name=htmlspecialchars(strip_tags($this->name));
@@ -130,9 +150,9 @@ class Phonebook_Model{
         $stmt->bindParam(":updatedate", $this->updatedate);
  
         if($stmt->execute()){
-            return true;
+            return 1;
         }else{
-            return false;
+            return 0;
         }
  
     }
@@ -149,7 +169,16 @@ class Phonebook_Model{
                     number=:number, updatedate=:updatedate WHERE id=:id";
  
         $stmt = $this->conn->prepare($query);
- 
+        
+        // ** check if exist
+        $phonebook_class = new Phonebook_Model($this->conn);
+        $num_number_exist = $phonebook_class->is_exist("", $this->number, $this->id);  // is number exist
+        if($num_number_exist>0)
+        {
+           return 2;  //name or number already exist!
+        }
+        //******
+        //
         // posted values
         $this->id=htmlspecialchars(strip_tags($this->id));
         $this->number=htmlspecialchars(strip_tags($this->number));
@@ -161,9 +190,9 @@ class Phonebook_Model{
         $stmt->bindParam(":updatedate", $this->updatedate);
  
         if($stmt->execute()){
-            return true;
+            return 1;
         }else{
-            return false;
+            return 0;
         }
  
     }
@@ -184,6 +213,48 @@ class Phonebook_Model{
         }else{
             return false;
         }
+    }
+    
+    // check if the item exist
+    function is_exist($name, $number, $id=0){
+        
+        if(empty($name) && empty($number))
+            return 0;
+        
+        $query = "SELECT name, number
+                FROM
+                    " . $this->table_name . "
+                WHERE ";
+            if(!empty($name)) {
+                $query .= "name=:name ";
+            }else if(!empty($number)){
+                $query .= "number=:number ";
+            }
+            if($id != 0)
+            {
+                $query .= "AND id!=:id ";
+            }
+        $stmt = $this->conn->prepare( $query );
+        
+        //clear variables
+        $name=htmlspecialchars(strip_tags($name));
+        $number=htmlspecialchars(strip_tags($number));
+        $id = htmlspecialchars(strip_tags($id));
+        
+        //bind parameters
+        if(!empty($name)) {
+            $stmt->bindParam(":name", $name);
+        }else if(!empty($number)){
+            $stmt->bindParam(":number", $number);
+        }
+        if($id != 0){
+            $stmt->bindParam(":id", $id);
+        }
+        
+        $stmt->execute();
+        $num = $stmt->rowCount();
+        return $num;
+        
     }
     
     

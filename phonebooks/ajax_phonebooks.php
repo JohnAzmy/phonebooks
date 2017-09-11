@@ -15,8 +15,9 @@ if(!isset($_POST['id']) && isset($_POST['name'])) {
     $phonebook->number = $_POST['number'];
     $phonebook->isactive = ($_POST['isactive']==1)?1:0;
     
-    if($phonebook->create()){
-        echo "1";
+    $result = $phonebook->create();
+    if($result){
+        echo $result;
     }else{
         echo "0";
     }
@@ -30,8 +31,9 @@ else if(isset($_POST['id']) && isset($_POST['name']))
     $phonebook->number = $_POST['number'];
     $phonebook->isactive = ($_POST['isactive']==1)?1:0;
     
-    if($phonebook->update()){
-        echo "1";
+    $result = $phonebook->update();
+    if($result){
+        echo $result;
     }else{
         echo "0";
     }
@@ -40,8 +42,9 @@ else if(isset($_POST['id']) && isset($_POST['name']))
 else if($_POST['type']==3){
     $phonebook->id = $_POST['id'];
     $phonebook->number = $_POST['number'];
-    if($phonebook->update_number()){
-        echo "1";
+    $result = $phonebook->update_number();
+    if($result){
+        echo $result;
     }else{
         echo "0";
     }

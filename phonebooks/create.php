@@ -48,7 +48,7 @@ $phonebook = new Phonebook_Model($db);
         
         var name = $('#name').val();
         var number = $('#number').val();
-        var isactive = $('#chkActive').val();
+        var isactive = $('#chkActive').is(':checked')?1:0;
         $.ajax({
                 url: "../phonebooks/ajax_phonebooks.php",
                 type: "POST",
@@ -57,9 +57,10 @@ $phonebook = new Phonebook_Model($db);
                 {
                     if(data == "1"){
                         $('#errors').html('data inserted successfully.');
-                        //$('#form1').clear();
-                    }else if(data == "0")
-                    {
+                        $('#form1')[0].reset();
+                    }else if(data == "2"){
+                        $('#errors').html('The name or number already exist!');
+                    }else if(data == "0"){
                         $('#errors').html('error in data, please try again!');
                     }
                 }
@@ -68,7 +69,7 @@ $phonebook = new Phonebook_Model($db);
         return true;
     }
 </script>
-<h2></h2>
+<h2>Add item</h2>
 <form id="form1" name="form1" action="" method="post">
 <table>
     <div id="errors" name="errors" class="error"></div>

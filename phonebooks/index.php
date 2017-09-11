@@ -3,22 +3,42 @@
 // include database and object files
 include_once '../include/conn.php';
 include_once '../models/phonebook_model.php';
- 
+
 // get database connection
 $database = new Database();
 $db = $database->getConnection();
-
 $phonebook = new Phonebook_Model($db);
+
+// page given in URL parameter, default page is one
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+// set number of records per page
+$records_per_page = 10;
+// calculate for the query LIMIT clause
+$from_record_num = ($records_per_page * $page) - $records_per_page;
+$total_rows = $phonebook->countAll();
+// calculate total pages
+$total_pages = ceil($total_rows / $records_per_page);
+
 // query items
-$stmt = $phonebook->readAll(0, 100);
+$stmt = $phonebook->readAll($from_record_num, $records_per_page);
 $num = $stmt->rowCount();
 ?>
 <script type="text/javascript">
     function clickEditOnFly(divId){
-        $('#divAjax'+divId).show();
+        
+        $('#divAjax'+divId).toggle();
     }
+    
     function editAjax(id)
     {
+        if($('#number'+id).val() == '')
+        {
+            $('#divMsg'+id).html('not valid!');
+            return false;
+        }else if(!$.isNumeric($('#number'+id).val())) {
+            $('#divMsg'+id).html('not valid!');
+            return false;
+        }
         var num = $('#number'+id).val();
         $.ajax({
                 url: "../phonebooks/ajax_phonebooks.php",
@@ -26,7 +46,14 @@ $num = $stmt->rowCount();
                 data: {"id":id, "number":num, "type":3},
                 success: function(data)
                 {
-                    $('#divAjax'+id).html('edited!');
+                    if(data == "1"){
+                        $('#divNumber'+id).html(num+'');
+                        $('#divMsg'+id).html('edited!');
+                    }else if(data == "2"){
+                        $('#divMsg'+id).html('already exist!');
+                    }else{
+                        $('#divMsg'+id).html('error happened!');
+                    }
                 }
             });
     }
@@ -60,7 +87,7 @@ $num = $stmt->rowCount();
     extract($row);?>
         <tr>
             <td><?php echo $name ?></td>
-            <td><?php echo $number ?>
+            <td><div id="divNumber<?php echo($id)?>"><?php echo $number ?></div><div id="divMsg<?php echo($id)?>"></div>
                 <div id="divAjax<?php echo($id)?>" style="display: none"> <input type="text" name="number<?php echo($id)?>" id="number<?php echo($id)?>" value="<?php echo $number; ?>" class="form-control input-sm">
                     <input type="button" name="button" onclick="editAjax(<?php echo $id ?>)" value="edit">
                 </div>           
@@ -75,5 +102,15 @@ $num = $stmt->rowCount();
         </tr>
 <?php } ?>
 </table>
+<?php if($num>0) {?>
+<ul class="pagination">
+    <?php if($page>1){?>
+        <li><a href='?page=<?php if($page>1)echo($page-1); ?>' title='Go to the first page.'>Previous</a></li>
+    <?php } ?>
+    <?php if($page < $total_pages){?>
+        <li><a href='?page=<?php echo($page+1)?>' title='Go to the first page.'>Next</a></li>
+    <?php } ?>
+</ul>
+<?php } ?>
 
 <?php include_once "../include/footer.php"; ?>
